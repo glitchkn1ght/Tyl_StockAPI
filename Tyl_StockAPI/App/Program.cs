@@ -1,3 +1,4 @@
+using Serilog;
 using Stock_API.App;
 
 namespace Stock_API.App

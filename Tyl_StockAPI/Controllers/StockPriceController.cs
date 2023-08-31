@@ -1,8 +1,6 @@
-using Azure;
 using Microsoft.AspNetCore.Mvc;
+using Stock_API.Models.Response;
 using Stock_API.ServiceBus;
-using Tyl_StockAPI.Models;
-using Tyl_StockAPI.Models.Response;
 
 namespace Tyl_StockAPI.Controllers
 {

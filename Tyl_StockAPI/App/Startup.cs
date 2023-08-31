@@ -25,9 +25,6 @@ namespace Stock_API.App
                 c.IncludeXmlComments(xmlPath);
             });
 
-            var sqlConfigSettings = Configuration.GetSection("SqlServerConnectionConfiguration");
-            services.Configure<SqlConnectionSettings>(sqlConfigSettings);
-
             services.BindDependancies();
         }
 

@@ -1,10 +1,7 @@
-using Azure;
 using CommonModels;
 using Microsoft.AspNetCore.Mvc;
 using Stock_API.Models.Response;
 using Stock_API.ServiceBus;
-using Tyl_StockAPI.Models;
-using Tyl_StockAPI.Models.Response;
 
 namespace Tyl_StockAPI.Controllers
 {
@@ -40,6 +37,12 @@ namespace Tyl_StockAPI.Controllers
 
                     return new BadRequestObjectResult(response);
                 }
+
+                trade.TradeId = new Guid();
+                trade.BrokerId = new Guid();
+                trade.PriceCurrency = "GBP";
+                trade.NumberOfShares = 1;
+                trade.PriceTotal = 100;
 
                 await _serviceBusPublisher.PublishTradeToTopic(trade);
 
