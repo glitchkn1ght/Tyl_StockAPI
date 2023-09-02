@@ -26,7 +26,7 @@ namespace Tyl_StockAPI.Controllers
             
             try
             {
-                bool validationResult = false;
+                bool validationResult = true;
 
                 _logger.LogInformation($"[Operation=ProcessTrade], Status=Success, Message=Processing Trade {trade.TradeId} from Broker {trade.BrokerId}");
 

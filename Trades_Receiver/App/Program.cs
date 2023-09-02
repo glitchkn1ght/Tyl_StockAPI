@@ -24,7 +24,7 @@ namespace TradesProcessor.App
 
             var configuration = new ConfigurationBuilder()
             .SetBasePath(basePath)
-            .AddJsonFile($"appsettings.{environment}.json", optional: false)
+            .AddJsonFile($"appsettings.json", optional: false)
             .AddEnvironmentVariables()
             .Build();
 

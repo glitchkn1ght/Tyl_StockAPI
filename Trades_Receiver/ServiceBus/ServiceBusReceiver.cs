@@ -1,8 +1,8 @@
 ﻿using Azure.Messaging.ServiceBus;
 using CommonModels;
+using CommonModels.Config;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Trades_Receiver.Models;
 using TradesProcessor.Interfaces;
 
 namespace TradesProcessor.ServiceBus

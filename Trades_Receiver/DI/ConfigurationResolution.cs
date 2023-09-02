@@ -8,6 +8,7 @@ using Trades_Receiver.DAL.Repositories;
 using TradesProcessor.DAL.Polly;
 using TradesProcessor.Interfaces;
 using TradesProcessor.Service;
+using TradesProcessor.ServiceBus;
 
 namespace TradesProcessor.DI
 {
@@ -33,12 +34,11 @@ namespace TradesProcessor.DI
 
         public static void BindDependancies(IServiceCollection services)
         {
-
             services.AddScoped<IPollyRetryPolicy, PollyRetryPolicy>();
             services.AddScoped<IPollyConnectionFactory, PollySqlConnectionFactory>();
             services.AddScoped<ITradesRepository, TradesRepository>();
 
-            services.AddScoped<IServiceBusTradeReceiver, IServiceBusTradeReceiver>();
+            services.AddScoped<IServiceBusTradeReceiver, ServiceBusTradeReceiver>();
 
             services.AddScoped<TradeProcessorService>();
         }

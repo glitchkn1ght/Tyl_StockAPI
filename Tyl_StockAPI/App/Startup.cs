@@ -1,4 +1,5 @@
-﻿using Stock_API.DI;
+﻿using CommonModels.Config;
+using Stock_API.DI;
 using System.Reflection;
 
 namespace Stock_API.App
@@ -22,6 +23,9 @@ namespace Stock_API.App
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
+
+            var serviceBusConfig = Configuration.GetSection("ServiceBus");
+            services.Configure<ServiceBusConfig>(serviceBusConfig);
 
             services.BindDependancies();
         }
