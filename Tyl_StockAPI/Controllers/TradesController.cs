@@ -52,6 +52,8 @@ namespace Tyl_StockAPI.Controllers
 
             catch (Exception ex)
             {
+                _logger.LogError($"[Operation=ProcessTrade], Status=Failure, Message=Exception Thrown, details {ex.Message}");
+
                 response.Code = 500;
                 response.Message = "Internal Server Error";
                 return new ObjectResult(response) { StatusCode = 500 };

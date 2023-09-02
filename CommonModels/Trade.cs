@@ -6,11 +6,11 @@ namespace CommonModels
         
         public Guid BrokerId { get; set; }
 
-        public string TickerSymbol { get; set; }
+        public string TickerSymbol { get; set; } = string.Empty;
 
         public decimal PriceTotal { get; set; } 
 
-        public string PriceCurrency { get; set; }
+        public string PriceCurrency { get; set; } = string.Empty;
 
         public decimal NumberOfShares { get; set; }
     }

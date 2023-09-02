@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Stock_API.Interfaces;
 using Stock_API.Models.Response;
-using Stock_API.ServiceBus;
 
 namespace Tyl_StockAPI.Controllers
 {
@@ -10,42 +10,76 @@ namespace Tyl_StockAPI.Controllers
     public class StockPriceController : ControllerBase
     {
         private readonly ILogger<TradesController> _logger;
-        private readonly IServiceBusPublisher _serviceBusPublisher;
+        private readonly IStockValidationService _stockValidationService;
+        private readonly IStockService _stockService;
 
-        public StockPriceController(ILogger<TradesController> logger, IServiceBusPublisher serviceBusPublisher)
+        public StockPriceController(ILogger<TradesController> logger, IStockValidationService stockValidationService , IStockService stockService)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _serviceBusPublisher = serviceBusPublisher ?? throw new ArgumentNullException(nameof(serviceBusPublisher));
+            _stockValidationService = stockValidationService ?? throw new ArgumentNullException(nameof(stockValidationService));
+            _stockService = stockService ?? throw new ArgumentNullException(nameof(stockService));
         }
 
-        [HttpGet("GetSingleClaimByUCR/{uniqueClaimsReference}")]
+        [HttpGet("GetStockPricesForSymbols/{symbols}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StockResponse))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(StockResponse))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(StockResponse))]
-        public async Task<IActionResult> GetStockPriceForSymbol(string symbol)
+        public async Task<IActionResult> GetStockPrices(string symbols)
         {
-            StockResponse response = new StockResponse();
+            List<string> requestedSymbols = symbols.Split(',').ToList();
+
+            StockResponse stockResponse = new StockResponse();
 
             try
             {
-                bool validationResult = false;
+                BaseResponse validationResult = await this._stockValidationService.ValidateStock(requestedSymbols);
 
-                if (!validationResult)
+                if (validationResult.Code != 0)
                 {
-                    response.Code = -101;
-                    response.Message = "Validation of Stock Symbol falied, please check input.";
-    
-                    return new BadRequestObjectResult(response);
-                }
+                    stockResponse.BaseResponse = validationResult;
 
-                return new OkObjectResult(response);
+                    _logger.LogError($"[Operation=GetStockPrices], Status=Failure, Message=Validation of Stock Symbols failed, details {validationResult.Message}");
+
+                    return new BadRequestObjectResult(stockResponse);
+                }
+                
+                stockResponse.Stocks =  await _stockService.GetStocks(requestedSymbols);
+
+                return new OkObjectResult(stockResponse);
             }
 
             catch (Exception ex)
             {
-                response.Code = 500;
-                response.Message = "Internal Server Error";
-                return new ObjectResult(response) { StatusCode = 500 };
+                _logger.LogError($"[Operation=GetStockPrices], Status=Failure, Message=Exception Thrown, details {ex.Message}");
+
+                stockResponse.BaseResponse.Code = 500;
+                stockResponse.BaseResponse.Message = "Internal Server Error";
+                return new ObjectResult(stockResponse) { StatusCode = 500 };
+            }
+        }
+
+        [HttpGet("GetAllStockPrices")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StockResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(StockResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(StockResponse))]
+        public async Task<IActionResult> GetAllStockPrices()
+        {
+            StockResponse stockResponse = new StockResponse();
+
+            try
+            {
+                stockResponse.Stocks = await _stockService.GetStocks(null);
+
+                return new OkObjectResult(stockResponse);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError($"[Operation=GetStockPrices], Status=Failure, Message=Exception Thrown, details {ex.Message}");
+
+                stockResponse.BaseResponse.Code = 500;
+                stockResponse.BaseResponse.Message = "Internal Server Error";
+                return new ObjectResult(stockResponse) { StatusCode = 500 };
             }
         }
     } 
