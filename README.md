@@ -1,6 +1,10 @@
 # Tyl_StockAPI
 
+## Running the solution
+
 - The solution can be tested with either the swagger UI - it should automatically navigate there on starting the API - or with the included postman collection.
+- For the tradeProcessor i have included the SQLScripts for the creation of the table and stored procedure. Just create a database named 'TylTrades' and then run the scripts. 
+- You might also need to update the connection strings in appsettings.json depending on the security settings on your machine.
 
 ## General Design Goals
 
@@ -16,6 +20,7 @@ a lot more and be worth the reduction in repeated code.
 ### General
 - The model needs more details added to it, such as the times trade was requested, completed etc.  
 - Obeservability. In addition to the existing logs integration with a tool such as splunk should be considered as well as collection of general system metrics.
+- Per environment config files. 
 
 ### Validation 
 - This is perhaps the current weakest area of the design, if working on this project in reality i would talk with business and other engineers to develop a detailed spec.
