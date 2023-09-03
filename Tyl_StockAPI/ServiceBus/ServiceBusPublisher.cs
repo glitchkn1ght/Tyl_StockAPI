@@ -3,27 +3,24 @@ using CommonModels;
 using CommonModels.Config;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Stock_API.Interfaces;
 
 namespace Stock_API.ServiceBus
 {
-    public interface IServiceBusPublisher
-    {
-        Task PublishTradeToTopic(Trade trade);
-    }
-
     public class ServiceBusPublisher : IServiceBusPublisher
     {
-        public readonly ServiceBusConfig _serviceBusConfig;
+        private readonly ServiceBusConfig _serviceBusConfig;
+        private readonly ServiceBusClient _client;
 
-        public ServiceBusPublisher(IOptions<ServiceBusConfig> serviceBusConfig)
+        public ServiceBusPublisher(IOptions<ServiceBusConfig> serviceBusConfig, ServiceBusClient client)
         {
             _serviceBusConfig = serviceBusConfig.Value;
+            _client = client ?? throw new ArgumentNullException(nameof(client));
         }
 
         public async Task PublishTradeToTopic(Trade trade)
         {
-            await using ServiceBusClient client = new ServiceBusClient(_serviceBusConfig.ConnectionString);
-            ServiceBusSender sender = client.CreateSender(_serviceBusConfig.TopicName);
+            ServiceBusSender sender = _client.CreateSender(_serviceBusConfig.TopicName);
 
             string message = JsonConvert.SerializeObject(trade);
 

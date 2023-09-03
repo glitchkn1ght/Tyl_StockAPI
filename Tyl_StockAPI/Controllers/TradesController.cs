@@ -2,7 +2,6 @@ using CommonModels;
 using Microsoft.AspNetCore.Mvc;
 using Stock_API.Interfaces;
 using Stock_API.Models.Response;
-using Stock_API.ServiceBus;
 
 namespace Stock_API.Controllers
 {

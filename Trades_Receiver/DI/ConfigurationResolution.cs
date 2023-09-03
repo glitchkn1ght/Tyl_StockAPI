@@ -3,6 +3,7 @@ using CommonModels.Config;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Serilog;
 using Trades_Receiver.DAL.Repositories;
 using TradesProcessor.DAL.Polly;
@@ -23,11 +24,7 @@ namespace TradesProcessor.DI
 
             services.Configure<TradesRepositorySettings>(configuration.GetSection("TradesRepository"));
 
-            services.AddAzureClients(builder =>
-            {
-                builder.AddServiceBusClient("Endpoint=sb://tylstockapi.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=yZVrxRFLW1ZPdFQIJNyVeYzOibHSZmJYR+ASbKl6qF0=");
-            });
-
+            
         }
 
         public static void ConfigureLogging(IServiceCollection services, IConfiguration configuration)
@@ -41,6 +38,12 @@ namespace TradesProcessor.DI
 
         public static void BindDependancies(IServiceCollection services)
         {
+            services.AddSingleton((serviceProvider) =>
+            {
+                var options = serviceProvider.GetService<IOptions<ServiceBusConfig>>().Value;
+                return new ServiceBusClient(options.ConnectionString);
+            });
+
             services.AddScoped<IPollyRetryPolicy, PollyRetryPolicy>();
             services.AddScoped<IPollyConnectionFactory, PollySqlConnectionFactory>();
             services.AddScoped<ITradesRepository, TradesRepository>();
