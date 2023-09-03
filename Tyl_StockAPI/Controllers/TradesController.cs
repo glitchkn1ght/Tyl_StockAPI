@@ -14,7 +14,7 @@ namespace Stock_API.Controllers
         private readonly ISymbolValidationService _symbolValidationService;
         private readonly IServiceBusPublisher _serviceBusPublisher;
 
-        public TradesController(ILogger<TradesController> logger, IServiceBusPublisher serviceBusPublisher, ISymbolValidationService symbolValidationService)
+        public TradesController(ILogger<TradesController> logger, ISymbolValidationService symbolValidationService, IServiceBusPublisher serviceBusPublisher)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _serviceBusPublisher = serviceBusPublisher ?? throw new ArgumentNullException(nameof(serviceBusPublisher));
@@ -25,7 +25,7 @@ namespace Stock_API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StockResponse))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(StockResponse))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(StockResponse))]
-        public async Task<IActionResult> ProcessTrade(Trade trade)
+        public async Task<IActionResult> StoreTrade(Trade trade)
         {
             TradeResponse tradeResponse = new TradeResponse()
             {

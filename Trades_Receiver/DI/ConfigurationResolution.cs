@@ -1,5 +1,5 @@
 ﻿using Azure.Messaging.ServiceBus;
-using CommonModels.Config;
+using CommonModels;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

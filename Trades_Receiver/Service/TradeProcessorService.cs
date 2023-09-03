@@ -1,6 +1,5 @@
 ﻿using Azure.Messaging.ServiceBus;
 using CommonModels;
-using CommonModels.Config;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -31,6 +30,9 @@ namespace TradesProcessor.Service
         {
             try
             {
+                this._logger.LogInformation(($"someinfo"));
+
+
                 await _processor.StartProcessingAsync();
 
                 Console.WriteLine("Wait for a minute and then press any key to end the processing");
@@ -50,9 +52,7 @@ namespace TradesProcessor.Service
         }
 
         async Task MessageHandler(ProcessMessageEventArgs args)
-        {
-            string body = args.Message.Body.ToString();
-            
+        {   
             Trade receivedTrade = JsonConvert.DeserializeObject<Trade>(args.Message.Body.ToString())!;
 
             this._logger.LogInformation(($"[Operation=ProcessTrades], Status=Failure, Message=Processing Trade {receivedTrade.TradeId}"));

@@ -1,4 +1,4 @@
-﻿using CommonModels.Config;
+﻿using CommonModels;
 using Stock_API.DI;
 using System.Reflection;
 

@@ -1,5 +1,5 @@
 ﻿using Azure.Messaging.ServiceBus;
-using CommonModels.Config;
+using CommonModels;
 using Microsoft.Extensions.Options;
 using Stock_API.Interfaces;
 using Stock_API.Service;
