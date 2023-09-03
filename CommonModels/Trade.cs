@@ -10,7 +10,7 @@ namespace CommonModels
 
         public decimal PriceTotal { get; set; } 
 
-        public string PriceCurrency { get; set; } = string.Empty;
+        public string TradeCurrency { get; set; } = string.Empty;
 
         public decimal NumberOfShares { get; set; }
     }

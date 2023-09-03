@@ -40,7 +40,7 @@ namespace Tyl_StockAPI.Controllers
 
                 trade.TradeId = new Guid();
                 trade.BrokerId = new Guid();
-                trade.PriceCurrency = "GBP";
+                trade.TradeCurrency = "GBP";
                 trade.NumberOfShares = 1;
                 trade.PriceTotal = 100;
 

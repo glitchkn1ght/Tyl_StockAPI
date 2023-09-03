@@ -4,6 +4,6 @@ namespace Trades_Receiver.DAL.Repositories
 {
     public interface ITradesRepository
     {
-        Task<int> InsertTrade(Trade trade);
+        public Task InsertTrade(Trade trade);
     }
 }

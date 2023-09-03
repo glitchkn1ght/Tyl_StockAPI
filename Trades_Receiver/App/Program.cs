@@ -14,7 +14,7 @@ namespace TradesProcessor.App
 
             var serviceProvider = services.BuildServiceProvider();
 
-            await serviceProvider.GetService<TradeProcessorService>()!.ProcessTradeTransactions();
+            await serviceProvider.GetService<TradeProcessorService>()!.ProcessTrades();
         }
 
         public static void ConfigureServices(IServiceCollection services)

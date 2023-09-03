@@ -1,56 +1,71 @@
-﻿using CommonModels;
+﻿using Azure.Messaging.ServiceBus;
+using CommonModels;
+using CommonModels.Config;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Trades_Receiver.DAL.Repositories;
-using TradesProcessor.Interfaces;
 
 namespace TradesProcessor.Service
 {
-    public class TradeProcessorService
+    public class TradeProcessorService 
     {
-        private readonly IServiceBusTradeReceiver _serviceBusTradeReceiver;
+        //private readonly ServiceBusClient _client;
+        private readonly ServiceBusConfig _serviceBusConfig;
         private readonly ITradesRepository _tradeRepository;
         private readonly ILogger<TradeProcessorService> _logger;
 
-        public TradeProcessorService(   ILogger<TradeProcessorService> logger, 
-                                        IServiceBusTradeReceiver serviceBusTradeReceiver,
-                                        ITradesRepository tradesRepository) 
+        public TradeProcessorService(ILogger<TradeProcessorService> logger, /*ServiceBusClient client,*/ IOptions<ServiceBusConfig> serviceBusConfig, ITradesRepository tradesRepository)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _serviceBusTradeReceiver = serviceBusTradeReceiver ?? throw new ArgumentNullException(nameof(serviceBusTradeReceiver)); 
+           // _client = client ?? throw new ArgumentNullException(nameof(client));
+            _serviceBusConfig = serviceBusConfig.Value;
             _tradeRepository = tradesRepository ?? throw new ArgumentNullException(nameof(tradesRepository));
+
         }
 
-        public async Task ProcessTradeTransactions()
+        public async Task ProcessTrades()
         {
             try
             {
-                Trade trade = await _serviceBusTradeReceiver.ReceiveTrade();
+                ServiceBusClient _client = new ServiceBusClient(_serviceBusConfig.ConnectionString);
 
-                if (trade == null)
-                {
-                    this._logger.LogWarning("[Operation = ProcessTradeTransactions],Status= Failed, Message=Could Not receive trade from Service bus");
-                    return;
-                }
+                await using ServiceBusProcessor processor = _client.CreateProcessor(_serviceBusConfig.TopicName, "TradeProcessor", new ServiceBusProcessorOptions());
 
-                this._logger.LogInformation($"[Operation = ProcessTradeTransactions],Status= Sucess, Message=Received trade {trade.TradeId} from Service bus");
+                processor.ProcessMessageAsync += MessageHandler;
+                processor.ProcessErrorAsync += ErrorHandler;
 
-                int repoResult = await _tradeRepository.InsertTrade(trade);
-
-                if(repoResult != 0)
-                {
-                    this._logger.LogWarning("[Operation = ProcessTradeTransactions],Status= Failed, Message=Could Not receive trade from Service bus");
-                }
-
-                else
-                {
-                    this._logger.LogInformation($"[Operation = ProcessTradeTransactions],Status= Sucess, Message=Trade {trade.TradeId} successfully stored in db");
-                }
+                await processor.StartProcessingAsync();
             }
-
-            catch (Exception ex)
+            
+            catch(Exception ex)
             {
-                this._logger.LogError($"[Operation = ProcessTradeTransactions],Status= Sucess, Message=Exception Thrown when processing trade");
+                this._logger.LogError(($"[Operation=ProcessTrades], Status=Failure, Message=Exception Thrown, details {ex.Message}"));
             }
+        }
+
+        async Task MessageHandler(ProcessMessageEventArgs args)
+        {
+            string body = args.Message.Body.ToString();
+            Console.WriteLine(body);
+
+            Trade receivedTrade = JsonConvert.DeserializeObject<Trade>(args.Message.Body.ToString())!;
+
+            await _tradeRepository.InsertTrade(receivedTrade);
+
+            await args.CompleteMessageAsync(args.Message);
+        }
+
+        Task ErrorHandler(ProcessErrorEventArgs args)
+        {
+            // the error source tells me at what point in the processing an error occurred
+            Console.WriteLine(args.ErrorSource);
+            // the fully qualified namespace is available
+            Console.WriteLine(args.FullyQualifiedNamespace);
+            // as well as the entity path
+            Console.WriteLine(args.EntityPath);
+            Console.WriteLine(args.Exception.ToString());
+            return Task.CompletedTask;
         }
     }
 }

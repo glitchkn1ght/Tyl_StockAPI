@@ -18,20 +18,21 @@ namespace Trades_Receiver.DAL.Repositories
             TradesRepositorySettings = tradesRepositorySettings.Value;
         }
 
-        public async Task<int> InsertTrade(Trade trade)
+        public async Task InsertTrade(Trade trade)
         {
             using (IDbConnection connection = ConnectionFactory.CreateOpenConnection())
             {
                 var parameters = new DynamicParameters();
 
+                parameters.Add("@TradeId", trade.TradeId);
                 parameters.Add("@BrokerId", trade.BrokerId);
+                parameters.Add("@TickerSymbol", trade.TickerSymbol);
+                parameters.Add("@PriceTotal", trade.PriceTotal);
+                parameters.Add("@TradeCurrency", trade.TradeCurrency);
+                parameters.Add("@NumberOfShares", trade.NumberOfShares);
                 parameters.Add("@retVal", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
 
                 await connection.ExecuteAsync(this.TradesRepositorySettings.InsertTradeProc, parameters, commandType: CommandType.StoredProcedure);
-
-                var result = parameters.Get<int>("@retVal");
-
-                return result;
             }
         }
     }
