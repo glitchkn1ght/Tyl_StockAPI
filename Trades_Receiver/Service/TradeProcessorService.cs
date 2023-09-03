@@ -30,9 +30,6 @@ namespace TradesProcessor.Service
         {
             try
             {
-                this._logger.LogInformation(($"someinfo"));
-
-
                 await _processor.StartProcessingAsync();
 
                 Console.WriteLine("Wait for a minute and then press any key to end the processing");

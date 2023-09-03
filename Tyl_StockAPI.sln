@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TradesProcessor", "Trades_R
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonModels", "CommonModels\CommonModels.csproj", "{3BCF4E50-D57D-47CE-A332-1E0F6E1FD5EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradesProcessor.UnitTests", "TradesProcessor.UnitTests\TradesProcessor.UnitTests.csproj", "{636B7304-65D8-4200-96ED-8E69BD2FE1E3}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockAPI.UnitTests", "StockAPI.UnitTests\StockAPI.UnitTests.csproj", "{8651E89E-32DD-4643-A1DB-04026F710E8A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2353A84B-6B33-42A3-8D60-6929795067CE}"
@@ -37,10 +35,6 @@ Global
 		{3BCF4E50-D57D-47CE-A332-1E0F6E1FD5EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BCF4E50-D57D-47CE-A332-1E0F6E1FD5EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3BCF4E50-D57D-47CE-A332-1E0F6E1FD5EE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{636B7304-65D8-4200-96ED-8E69BD2FE1E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{636B7304-65D8-4200-96ED-8E69BD2FE1E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{636B7304-65D8-4200-96ED-8E69BD2FE1E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{636B7304-65D8-4200-96ED-8E69BD2FE1E3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8651E89E-32DD-4643-A1DB-04026F710E8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8651E89E-32DD-4643-A1DB-04026F710E8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8651E89E-32DD-4643-A1DB-04026F710E8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
