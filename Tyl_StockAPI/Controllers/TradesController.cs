@@ -22,9 +22,15 @@ namespace Stock_API.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StockResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(StockResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(StockResponse))]
         public async Task<IActionResult> ProcessTrade(Trade trade)
         {
-            TradeResponse tradeResponse = new TradeResponse();
+            TradeResponse tradeResponse = new TradeResponse()
+            {
+                Trade = trade
+            };
 
             try
             {
@@ -37,18 +43,19 @@ namespace Stock_API.Controllers
                     return new BadRequestObjectResult(tradeResponse);
                 }
 
+                _logger.LogInformation($"[Operation=ProcessTrade], Status=Success, Message=Validation of Symbols Successful, Posting trade {trade.TradeId} to message bus.");
+
                 await _serviceBusPublisher.PublishTradeToTopic(trade);
 
                 return new OkObjectResult(tradeResponse);
-
             }
 
             catch (Exception ex)
             {
                 _logger.LogError($"[Operation=ProcessTrade], Status=Failure, Message=Exception Thrown, details {ex.Message}");
 
-                tradeResponse.Code = 500;
-                tradeResponse.Message = "Internal Server Error";
+                tradeResponse.Response.Code = 500;
+                tradeResponse.Response.Message = "Internal Server Error";
                 return new ObjectResult(tradeResponse) { StatusCode = 500 };
             }
         }

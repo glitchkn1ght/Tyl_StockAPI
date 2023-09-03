@@ -27,7 +27,10 @@ namespace Tyl_StockAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(StockResponse))]
         public async Task<IActionResult> GetStockPrices(string symbols)
         {
-            StockResponse stockResponse = new StockResponse();
+            StockResponse stockResponse = new StockResponse()
+            {
+                RequestedSymbols = symbols
+            };
 
             try
             {
@@ -63,11 +66,17 @@ namespace Tyl_StockAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(StockResponse))]
         public async Task<IActionResult> GetAllStockPrices()
         {
-            StockResponse stockResponse = new StockResponse();
+            StockResponse stockResponse = new StockResponse()
+            {
+                RequestedSymbols = "All"
+            };
 
             try
             {
                 stockResponse.Stocks = await _stockService.GetStocks(null);
+
+                stockResponse.Response.Code = 0;
+                stockResponse.Response.Message = "OK";
 
                 return new OkObjectResult(stockResponse);
             }

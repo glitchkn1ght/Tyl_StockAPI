@@ -23,8 +23,6 @@ namespace TradesProcessor.DI
             services.Configure<ServiceBusConfig>(configuration.GetSection("ServiceBus"));
 
             services.Configure<TradesRepositorySettings>(configuration.GetSection("TradesRepository"));
-
-            
         }
 
         public static void ConfigureLogging(IServiceCollection services, IConfiguration configuration)
@@ -40,7 +38,7 @@ namespace TradesProcessor.DI
         {
             services.AddSingleton((serviceProvider) =>
             {
-                var options = serviceProvider.GetService<IOptions<ServiceBusConfig>>().Value;
+                var options = serviceProvider.GetService<IOptions<ServiceBusConfig>>()!.Value;
                 return new ServiceBusClient(options.ConnectionString);
             });
 

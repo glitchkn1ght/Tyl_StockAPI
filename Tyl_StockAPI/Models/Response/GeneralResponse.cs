@@ -2,7 +2,7 @@
 {
     public class GeneralResponse
     {
-        public int Code { get; set; } = 0;
+        public int? Code { get; set; } = null;
 
         public string Message { get; set; } = string.Empty;
     }

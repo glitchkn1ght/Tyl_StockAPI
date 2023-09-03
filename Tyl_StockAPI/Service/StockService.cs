@@ -10,14 +10,14 @@ namespace Stock_API.Interfaces
 
         public async Task<List<Stock>> GetStocks(string stockSymbols)
         {
-            List<string> requestedStockList = stockSymbols.Split(',').ToList();
-
-            //create httpclient, call to external api
+           
             List<Stock> stocks = new List<Stock>();
+            
             Random rnd = new Random();
 
-            if (requestedStockList != null)
+            if (!string.IsNullOrEmpty(stockSymbols))
             {
+                List<string> requestedStockList = stockSymbols.Split(',').ToList();
                 foreach (string s in requestedStockList)
                 {
                     stocks.Add(new Stock(s, rnd.Next(1, 500)));

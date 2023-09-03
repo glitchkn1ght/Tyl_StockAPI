@@ -21,7 +21,6 @@ namespace TradesProcessor.App
 
         public static void ConfigureServices(IServiceCollection services)
         {
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
 
             var configuration = new ConfigurationBuilder()

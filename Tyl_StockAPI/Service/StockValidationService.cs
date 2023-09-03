@@ -23,6 +23,12 @@ namespace Stock_API.Service
                 response.Message = $"The following symbol(s) are not valid {validationErrors}";
             }
 
+            else
+            {
+                response.Code = 0;
+                response.Message = "OK";
+            }
+
             return response;
         }
     }

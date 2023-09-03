@@ -1,0 +1,78 @@
+{
+	"info": {
+		"_postman_id": "b167c420-30da-4290-9174-10c5c1277090",
+		"name": "Tyl_StockApi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetStockPriceForSymbol",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7118/StockPrice/GetStockPricesForSymbols/",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7118",
+					"path": [
+						"StockPrice",
+						"GetStockPricesForSymbols",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllStockPrices",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7118/StockPrice/GetAllStockPrices",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7118",
+					"path": [
+						"StockPrice",
+						"GetAllStockPrices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PostTrade",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"tradeId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n  \"brokerId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n  \"tickerSymbol\": \"AAPL\",\r\n  \"priceTotal\": 500,\r\n  \"tradeCurrency\": \"GBP\",\r\n  \"numberOfShares\": 5\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7118/Trades",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7118",
+					"path": [
+						"Trades"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

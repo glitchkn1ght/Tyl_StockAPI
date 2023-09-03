@@ -2,12 +2,10 @@
 {
     public class ServiceBusConfig
     {
-        public string TopicName { get; set; }
+        public string TopicName { get; set; } = string.Empty;
 
-        public bool AutoCompleteMessages { get; set; }
-
-        public int MaxConcurrentCalls { get; set; }
+        public string SubscriptionName { get; set; } = string.Empty;    
         
-        public string ConnectionString { get; set; }
+        public string ConnectionString { get; set; } = string.Empty;
     }
 }

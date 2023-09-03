@@ -22,18 +22,15 @@ namespace TradesProcessor.Service
             _client = client ?? throw new ArgumentNullException(nameof(client));
             _serviceBusConfig = serviceBusConfig.Value;
             _tradeRepository = tradesRepository ?? throw new ArgumentNullException(nameof(tradesRepository));
-
+            _processor = _client.CreateProcessor(_serviceBusConfig.TopicName, _serviceBusConfig.SubscriptionName, new ServiceBusProcessorOptions());
+            _processor.ProcessMessageAsync += MessageHandler;
+            _processor.ProcessErrorAsync += ErrorHandler;
         }
 
         public async Task ProcessTrades()
         {
             try
             {
-                _processor = _client.CreateProcessor("trades", "TradeProcessor", new ServiceBusProcessorOptions());
-
-                _processor.ProcessMessageAsync += MessageHandler;
-                _processor.ProcessErrorAsync += ErrorHandler;
-
                 await _processor.StartProcessingAsync();
 
                 Console.WriteLine("Wait for a minute and then press any key to end the processing");
@@ -55,9 +52,10 @@ namespace TradesProcessor.Service
         async Task MessageHandler(ProcessMessageEventArgs args)
         {
             string body = args.Message.Body.ToString();
-            Console.WriteLine(body);
-
+            
             Trade receivedTrade = JsonConvert.DeserializeObject<Trade>(args.Message.Body.ToString())!;
+
+            this._logger.LogInformation(($"[Operation=ProcessTrades], Status=Failure, Message=Processing Trade {receivedTrade.TradeId}"));
 
             await _tradeRepository.InsertTrade(receivedTrade);
 
@@ -66,7 +64,6 @@ namespace TradesProcessor.Service
 
         Task ErrorHandler(ProcessErrorEventArgs args)
         {
-            // the error source tells me at what point in the processing an error occurred
             this._logger.LogError(($"[Operation=ProcessTrades], Status=Failure, Message=Error Source {args.ErrorSource}, Exception={args.Exception.Message}"));
             return Task.CompletedTask;
         }
