@@ -27,7 +27,8 @@ namespace StockAPI.UnitTests.Controllers
 
             _stockController = new StockPriceController(_loggerMock.Object, _symbolValidationServiceMock.Object, _stockServiceMock.Object);
         }
-    
+
+        [Test]
         public void When_StockRetrievedSuccessfully_ThenGetStockPricesReturnsOk()
         {
             string symbols = "AMZN";
@@ -76,7 +77,7 @@ namespace StockAPI.UnitTests.Controllers
 
             _stockServiceMock.Verify(x => x.GetStocks(It.IsAny<string>()), Times.Never);
 
-            Assert.IsInstanceOf<TradeResponse>(actual.Value);
+            Assert.IsInstanceOf<StockResponse>(actual.Value);
             Assert.AreEqual(500, actual.StatusCode);
             Assert.AreEqual("Internal Server Error", ((StockResponse)actual.Value).Response.Message);
         }
