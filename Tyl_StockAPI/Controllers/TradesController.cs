@@ -1,9 +1,10 @@
 using CommonModels;
 using Microsoft.AspNetCore.Mvc;
+using Stock_API.Interfaces;
 using Stock_API.Models.Response;
 using Stock_API.ServiceBus;
 
-namespace Tyl_StockAPI.Controllers
+namespace Stock_API.Controllers
 {
     [Produces("application/json")]
     [ApiController]
@@ -11,42 +12,35 @@ namespace Tyl_StockAPI.Controllers
     public class TradesController : ControllerBase
     {
         private readonly ILogger<TradesController> _logger;
+        private readonly ISymbolValidationService _symbolValidationService;
         private readonly IServiceBusPublisher _serviceBusPublisher;
 
-        public TradesController(ILogger<TradesController> logger, IServiceBusPublisher serviceBusPublisher)
+        public TradesController(ILogger<TradesController> logger, IServiceBusPublisher serviceBusPublisher, ISymbolValidationService symbolValidationService)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _serviceBusPublisher = serviceBusPublisher ?? throw new ArgumentNullException(nameof(serviceBusPublisher));
+            _symbolValidationService = symbolValidationService ?? throw new ArgumentNullException(nameof(symbolValidationService));
         }
 
         [HttpPost]
         public async Task<IActionResult> ProcessTrade(Trade trade)
         {
-            TradeResponse response = new TradeResponse();
-            
+            TradeResponse tradeResponse = new TradeResponse();
+
             try
             {
-                bool validationResult = true;
-
                 _logger.LogInformation($"[Operation=ProcessTrade], Status=Success, Message=Processing Trade {trade.TradeId} from Broker {trade.BrokerId}");
 
-                if (!validationResult)
+                tradeResponse.Response = await _symbolValidationService.ValidateTickerSymbol(trade.TickerSymbol);
+
+                if (tradeResponse.Response.Code != 0)
                 {
-                    response.Code = -101;
-                    response.Message = "Validation of Trade Symbol falied, please check input.";
-
-                    return new BadRequestObjectResult(response);
+                    return new BadRequestObjectResult(tradeResponse);
                 }
-
-                trade.TradeId = new Guid();
-                trade.BrokerId = new Guid();
-                trade.TradeCurrency = "GBP";
-                trade.NumberOfShares = 1;
-                trade.PriceTotal = 100;
 
                 await _serviceBusPublisher.PublishTradeToTopic(trade);
 
-                return new OkObjectResult(response);
+                return new OkObjectResult(tradeResponse);
 
             }
 
@@ -54,9 +48,9 @@ namespace Tyl_StockAPI.Controllers
             {
                 _logger.LogError($"[Operation=ProcessTrade], Status=Failure, Message=Exception Thrown, details {ex.Message}");
 
-                response.Code = 500;
-                response.Message = "Internal Server Error";
-                return new ObjectResult(response) { StatusCode = 500 };
+                tradeResponse.Code = 500;
+                tradeResponse.Message = "Internal Server Error";
+                return new ObjectResult(tradeResponse) { StatusCode = 500 };
             }
         }
     }

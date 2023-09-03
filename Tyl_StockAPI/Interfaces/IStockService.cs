@@ -4,6 +4,6 @@ namespace Stock_API.Interfaces
 {
     public interface IStockService
     {
-       public Task<List<Stock>> GetStocks(List<string>? requestedSymbols);
+       public Task<List<Stock>> GetStocks(string requestedSymbols);
     }
 }

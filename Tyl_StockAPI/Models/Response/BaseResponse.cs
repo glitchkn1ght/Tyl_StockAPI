@@ -1,6 +1,6 @@
 ﻿namespace Stock_API.Models.Response
 {
-    public class BaseResponse
+    public class GeneralResponse
     {
         public int Code { get; set; } = 0;
 

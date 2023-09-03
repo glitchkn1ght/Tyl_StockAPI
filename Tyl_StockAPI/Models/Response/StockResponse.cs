@@ -2,7 +2,7 @@
 {
     public class StockResponse 
     {
-        public BaseResponse BaseResponse { get; set; } = new BaseResponse();
+        public GeneralResponse Response { get; set; } = new GeneralResponse();
 
         public List<Stock> Stocks { get; set; } = new List<Stock>();
     }

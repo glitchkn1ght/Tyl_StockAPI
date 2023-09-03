@@ -10,15 +10,16 @@ namespace TradesProcessor.Service
 {
     public class TradeProcessorService 
     {
-        //private readonly ServiceBusClient _client;
+        private readonly ServiceBusClient _client;
         private readonly ServiceBusConfig _serviceBusConfig;
         private readonly ITradesRepository _tradeRepository;
         private readonly ILogger<TradeProcessorService> _logger;
+        private ServiceBusProcessor _processor;
 
-        public TradeProcessorService(ILogger<TradeProcessorService> logger, /*ServiceBusClient client,*/ IOptions<ServiceBusConfig> serviceBusConfig, ITradesRepository tradesRepository)
+        public TradeProcessorService(ILogger<TradeProcessorService> logger, ServiceBusClient client, IOptions<ServiceBusConfig> serviceBusConfig, ITradesRepository tradesRepository)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-           // _client = client ?? throw new ArgumentNullException(nameof(client));
+            _client = client ?? throw new ArgumentNullException(nameof(client));
             _serviceBusConfig = serviceBusConfig.Value;
             _tradeRepository = tradesRepository ?? throw new ArgumentNullException(nameof(tradesRepository));
 
@@ -28,19 +29,26 @@ namespace TradesProcessor.Service
         {
             try
             {
-                ServiceBusClient _client = new ServiceBusClient(_serviceBusConfig.ConnectionString);
+                _processor = _client.CreateProcessor("trades", "TradeProcessor", new ServiceBusProcessorOptions());
 
-                await using ServiceBusProcessor processor = _client.CreateProcessor(_serviceBusConfig.TopicName, "TradeProcessor", new ServiceBusProcessorOptions());
+                _processor.ProcessMessageAsync += MessageHandler;
+                _processor.ProcessErrorAsync += ErrorHandler;
 
-                processor.ProcessMessageAsync += MessageHandler;
-                processor.ProcessErrorAsync += ErrorHandler;
+                await _processor.StartProcessingAsync();
 
-                await processor.StartProcessingAsync();
+                Console.WriteLine("Wait for a minute and then press any key to end the processing");
+                Console.ReadKey();
             }
             
             catch(Exception ex)
             {
                 this._logger.LogError(($"[Operation=ProcessTrades], Status=Failure, Message=Exception Thrown, details {ex.Message}"));
+            }
+
+            finally
+            {
+                await _processor.DisposeAsync();
+                await _client.DisposeAsync();
             }
         }
 
@@ -59,12 +67,7 @@ namespace TradesProcessor.Service
         Task ErrorHandler(ProcessErrorEventArgs args)
         {
             // the error source tells me at what point in the processing an error occurred
-            Console.WriteLine(args.ErrorSource);
-            // the fully qualified namespace is available
-            Console.WriteLine(args.FullyQualifiedNamespace);
-            // as well as the entity path
-            Console.WriteLine(args.EntityPath);
-            Console.WriteLine(args.Exception.ToString());
+            this._logger.LogError(($"[Operation=ProcessTrades], Status=Failure, Message=Error Source {args.ErrorSource}, Exception={args.Exception.Message}"));
             return Task.CompletedTask;
         }
     }

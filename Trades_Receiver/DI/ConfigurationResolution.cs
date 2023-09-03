@@ -23,10 +23,10 @@ namespace TradesProcessor.DI
 
             services.Configure<TradesRepositorySettings>(configuration.GetSection("TradesRepository"));
 
-            //services.AddAzureClients(builder =>
-            //{
-            //    builder.AddServiceBusClient("Endpoint=sb://tylstockapi.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=yZVrxRFLW1ZPdFQIJNyVeYzOibHSZmJYR+ASbKl6qF0=");
-            //});
+            services.AddAzureClients(builder =>
+            {
+                builder.AddServiceBusClient("Endpoint=sb://tylstockapi.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=yZVrxRFLW1ZPdFQIJNyVeYzOibHSZmJYR+ASbKl6qF0=");
+            });
 
         }
 

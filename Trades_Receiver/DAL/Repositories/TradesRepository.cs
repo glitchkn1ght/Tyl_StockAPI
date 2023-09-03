@@ -30,9 +30,8 @@ namespace Trades_Receiver.DAL.Repositories
                 parameters.Add("@PriceTotal", trade.PriceTotal);
                 parameters.Add("@TradeCurrency", trade.TradeCurrency);
                 parameters.Add("@NumberOfShares", trade.NumberOfShares);
-                parameters.Add("@retVal", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
 
-                await connection.ExecuteAsync(this.TradesRepositorySettings.InsertTradeProc, parameters, commandType: CommandType.StoredProcedure);
+                await connection.ExecuteAsync(this.TradesRepositorySettings.InsertProc, parameters, commandType: CommandType.StoredProcedure);
             }
         }
     }

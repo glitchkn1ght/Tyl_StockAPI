@@ -8,7 +8,7 @@ namespace Stock_API.DI
     {
         public static IServiceCollection BindDependancies(this IServiceCollection services)
         {
-            services.AddScoped<IStockValidationService, StockValidationService>(); 
+            services.AddScoped<ISymbolValidationService, SymbolValidationService>(); 
             
             services.AddScoped<IStockService, StockService>();
 

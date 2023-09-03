@@ -2,8 +2,10 @@
 
 namespace Stock_API.Models.Response
 {
-    public class TradeResponse : BaseResponse
+    public class TradeResponse : GeneralResponse
     {
-        public Trade Trade { get; set; }
+        public GeneralResponse Response { get; set; } = new GeneralResponse();
+        
+        public Trade Trade { get; set; } = new Trade();
     }
 }

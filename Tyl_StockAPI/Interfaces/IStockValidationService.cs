@@ -2,8 +2,8 @@
 
 namespace Stock_API.Interfaces
 {
-    public interface IStockValidationService
+    public interface ISymbolValidationService
     {
-        public Task<BaseResponse> ValidateStock(List<string> requestedSymbols);
+        public Task<GeneralResponse> ValidateTickerSymbol(string requestedSymbols);
     }
 }
