@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Serilog;
 using TradesProcessor.DI;
 using TradesProcessor.Service;
 
@@ -11,29 +13,37 @@ namespace TradesProcessor.App
     {
         public static async Task Main(string[] args)
         {
-            var services = new ServiceCollection();
-            ConfigureServices(services);
+            var host = AppStartup();
 
-            var serviceProvider = services.BuildServiceProvider();
+            var service = ActivatorUtilities.CreateInstance<TradeProcessorService>(host.Services);
 
-            await serviceProvider.GetService<TradeProcessorService>()!.ProcessTrades();
+            await service.ProcessTrades();
         }
 
-        public static void ConfigureServices(IServiceCollection services)
+        static IHost AppStartup()
         {
-            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            var builder = new ConfigurationBuilder();
 
-            var configuration = new ConfigurationBuilder()
-            .SetBasePath(basePath)
-            .AddJsonFile($"appsettings.json", optional: false)
-            .AddEnvironmentVariables()
-            .Build();
+            builder.SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables();
 
-            ConfigurationResolution.ConfigureLogging(services, configuration);
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(builder.Build())
+                .CreateLogger();
 
-            ConfigurationResolution.ResolveConfigurationOptions(services, configuration);
+            var host = Host.CreateDefaultBuilder()
+                .ConfigureServices((context, services) => {
+                    ConfigurationResolution.ConfigureLogging(services, context.Configuration);
 
-            ConfigurationResolution.BindDependancies(services);
+                    ConfigurationResolution.ResolveConfigurationOptions(services, context.Configuration);
+
+                    ConfigurationResolution.BindDependancies(services);
+                })
+                .UseSerilog()
+                .Build();
+
+            return host;
         }
     }
 }
