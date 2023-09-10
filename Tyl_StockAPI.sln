@@ -7,9 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stock_API", "Tyl_StockAPI\S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TradesProcessor", "Trades_Receiver\TradesProcessor.csproj", "{D22FCD07-6927-4426-AEC2-C294EF140A81}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonModels", "CommonModels\CommonModels.csproj", "{3BCF4E50-D57D-47CE-A332-1E0F6E1FD5EE}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockAPI.UnitTests", "StockAPI.UnitTests\StockAPI.UnitTests.csproj", "{8651E89E-32DD-4643-A1DB-04026F710E8A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockAPI.UnitTests", "StockAPI.UnitTests\StockAPI.UnitTests.csproj", "{8651E89E-32DD-4643-A1DB-04026F710E8A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2353A84B-6B33-42A3-8D60-6929795067CE}"
 	ProjectSection(SolutionItems) = preProject
@@ -31,10 +29,6 @@ Global
 		{D22FCD07-6927-4426-AEC2-C294EF140A81}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D22FCD07-6927-4426-AEC2-C294EF140A81}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D22FCD07-6927-4426-AEC2-C294EF140A81}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3BCF4E50-D57D-47CE-A332-1E0F6E1FD5EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3BCF4E50-D57D-47CE-A332-1E0F6E1FD5EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3BCF4E50-D57D-47CE-A332-1E0F6E1FD5EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3BCF4E50-D57D-47CE-A332-1E0F6E1FD5EE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8651E89E-32DD-4643-A1DB-04026F710E8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8651E89E-32DD-4643-A1DB-04026F710E8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8651E89E-32DD-4643-A1DB-04026F710E8A}.Release|Any CPU.ActiveCfg = Release|Any CPU

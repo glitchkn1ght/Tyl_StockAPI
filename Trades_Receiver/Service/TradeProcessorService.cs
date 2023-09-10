@@ -54,7 +54,7 @@ namespace TradesProcessor.Service
         {   
             Trade receivedTrade = JsonConvert.DeserializeObject<Trade>(args.Message.Body.ToString())!;
 
-            this._logger.LogInformation(($"[Operation=ProcessTrades], Status=Failure, Message=Processing Trade {receivedTrade.TradeId}"));
+            this._logger.LogInformation(($"[Operation=ProcessTrades], Status=Success, Message=Processing Trade {receivedTrade.TradeId}"));
 
             await _tradeRepository.InsertTrade(receivedTrade);
 

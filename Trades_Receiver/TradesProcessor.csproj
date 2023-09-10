@@ -42,10 +42,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CommonModels\CommonModels.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="DAL\Polly\PollySqlDbConnection.cs">
       <SubType>Component</SubType>
     </Compile>

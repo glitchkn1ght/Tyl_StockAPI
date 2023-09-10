@@ -1,13 +1,14 @@
+using Stock_API.Validation;
 using System.ComponentModel.DataAnnotations;
 
-namespace CommonModels
+namespace Stock_API.Models
 {
     public class Trade
     {
-        [Required]
+        [NotNullOrEmpty]
         public Guid TradeId { get; set; }
 
-        [Required]
+        [NotNullOrEmpty]
         public Guid BrokerId { get; set; }
 
         [Required]
