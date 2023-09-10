@@ -4,6 +4,6 @@ namespace Stock_API.Interfaces
 {
     public interface ISymbolValidationService
     {
-        public Task<GeneralResponse> ValidateTickerSymbol(string requestedSymbols);
+        public Task<ResponseStatus> ValidateTickerSymbol(string requestedSymbols);
     }
 }

@@ -1,7 +1,10 @@
+using Azure;
 using Microsoft.AspNetCore.Mvc;
 using Stock_API.Controllers;
 using Stock_API.Interfaces;
 using Stock_API.Models.Response;
+using Stock_API.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tyl_StockAPI.Controllers
 {
@@ -11,13 +14,13 @@ namespace Tyl_StockAPI.Controllers
     public class StockPriceController : ControllerBase
     {
         private readonly ILogger<TradesController> _logger;
-        private readonly ISymbolValidationService _symbolValidationService;
+        private readonly IModelStateValidator _modelStateValidator;
         private readonly IStockService _stockService;
 
-        public StockPriceController(ILogger<TradesController> logger, ISymbolValidationService symbolValidationService , IStockService stockService)
+        public StockPriceController(ILogger<TradesController> logger, IModelStateValidator modelStateValidator, IStockService stockService)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _symbolValidationService = symbolValidationService ?? throw new ArgumentNullException(nameof(symbolValidationService));
+            _modelStateValidator = modelStateValidator ?? throw new ArgumentNullException(nameof(modelStateValidator));
             _stockService = stockService ?? throw new ArgumentNullException(nameof(stockService));
         }
 
@@ -25,7 +28,7 @@ namespace Tyl_StockAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StockResponse))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(StockResponse))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(StockResponse))]
-        public async Task<IActionResult> GetStockPrices(string symbols)
+        public async Task<IActionResult> GetStockPrices([TickerSymbol] string symbols)
         {
             StockResponse stockResponse = new StockResponse()
             {
@@ -34,17 +37,15 @@ namespace Tyl_StockAPI.Controllers
 
             try
             {
-                GeneralResponse validationResult = await this._symbolValidationService.ValidateTickerSymbol(symbols);
-
-                if (validationResult.Code != 0)
+                if (!ModelState.IsValid)
                 {
-                    stockResponse.Response = validationResult;
+                    stockResponse.ResponseStatus = _modelStateValidator.MapModelStateErrors(ModelState);
 
-                    _logger.LogError($"[Operation=GetStockPrices], Status=Failure, Message=Validation of Stock Symbols failed, details {validationResult.Message}");
+                    _logger.LogError($"[Operation=GetStockPrices], Status=Failure, Message=Validation of Stock Symbols failed, details {stockResponse.ResponseStatus.Message}");
 
-                    return new BadRequestObjectResult(stockResponse);
+                    return BadRequest(stockResponse);
                 }
-                
+
                 stockResponse.Stocks =  await _stockService.GetStocks(symbols);
 
                 return new OkObjectResult(stockResponse);
@@ -54,8 +55,8 @@ namespace Tyl_StockAPI.Controllers
             {
                 _logger.LogError($"[Operation=GetStockPrices], Status=Failure, Message=Exception Thrown, details {ex.Message}");
 
-                stockResponse.Response.Code = 500;
-                stockResponse.Response.Message = "Internal Server Error";
+                stockResponse.ResponseStatus.Code = 500;
+                stockResponse.ResponseStatus.Message = "Internal Server Error";
                 return new ObjectResult(stockResponse) { StatusCode = 500 };
             }
         }
@@ -75,8 +76,8 @@ namespace Tyl_StockAPI.Controllers
             {
                 stockResponse.Stocks = await _stockService.GetStocks(null);
 
-                stockResponse.Response.Code = 0;
-                stockResponse.Response.Message = "OK";
+                stockResponse.ResponseStatus.Code = 0;
+                stockResponse.ResponseStatus.Message = "OK";
 
                 return new OkObjectResult(stockResponse);
             }
@@ -85,8 +86,8 @@ namespace Tyl_StockAPI.Controllers
             {
                 _logger.LogError($"[Operation=GetStockPrices], Status=Failure, Message=Exception Thrown, details {ex.Message}");
 
-                stockResponse.Response.Code = 500;
-                stockResponse.Response.Message = "Internal Server Error";
+                stockResponse.ResponseStatus.Code = 500;
+                stockResponse.ResponseStatus.Message = "Internal Server Error";
                 return new ObjectResult(stockResponse) { StatusCode = 500 };
             }
         }

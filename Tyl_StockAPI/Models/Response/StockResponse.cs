@@ -2,7 +2,7 @@
 {
     public class StockResponse 
     {
-        public GeneralResponse Response { get; set; } = new GeneralResponse();
+        public ResponseStatus ResponseStatus { get; set; } = new ResponseStatus();
 
         public string RequestedSymbols { get; set; } = string.Empty;
 

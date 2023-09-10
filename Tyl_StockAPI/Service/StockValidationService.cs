@@ -8,9 +8,9 @@ namespace Stock_API.Service
         //In order to be most performant this would be cached from an external service at an appropriate interval.
         List<string> validSymbols = new List<string> { "AAPL", "AMZN", "MSFT", "ATVI" };
 
-        public async Task<GeneralResponse> ValidateTickerSymbol(string requestedSymbols)
+        public async Task<ResponseStatus> ValidateTickerSymbol(string requestedSymbols)
         {
-            GeneralResponse response = new GeneralResponse();
+            ResponseStatus response = new ResponseStatus();
             List<string> requestedSymbolList = requestedSymbols.Split(',').ToList();
 
             IEnumerable<string> invalidSymbols = requestedSymbolList.Except(validSymbols);

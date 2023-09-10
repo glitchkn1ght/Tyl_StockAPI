@@ -4,7 +4,7 @@ namespace Stock_API.Models.Response
 {
     public class TradeResponse
     {
-        public GeneralResponse Response { get; set; } = new GeneralResponse();
+        public ResponseStatus ResponseStatus { get; set; } = new ResponseStatus();
         
         public Trade Trade { get; set; } = new Trade();
     }

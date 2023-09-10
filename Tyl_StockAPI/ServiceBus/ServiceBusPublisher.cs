@@ -3,6 +3,7 @@ using CommonModels;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Stock_API.Interfaces;
+using Stock_API.Models;
 
 namespace Stock_API.ServiceBus
 {

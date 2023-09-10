@@ -33,7 +33,7 @@ namespace StockAPI.UnitTests.Controllers
         {
             string symbols = "AMZN";
             
-            GeneralResponse validationResponse = new GeneralResponse() { Code = 0, Message = "OK" };
+            ResponseStatus validationResponse = new ResponseStatus() { Code = 0, Message = "OK" };
 
             List<Stock> stocks = new List<Stock>();
             stocks.Add(new Stock("AAPL", 100.1M));
@@ -53,7 +53,7 @@ namespace StockAPI.UnitTests.Controllers
         {
             string symbol = "AMZN";
             
-            GeneralResponse validationResponse = new GeneralResponse() { Code = -101, Message = "ValidationError"};
+            ResponseStatus validationResponse = new ResponseStatus() { Code = -101, Message = "ValidationError"};
 
             _symbolValidationServiceMock.Setup(x => x.ValidateTickerSymbol(It.IsAny<string>())).Returns(Task.FromResult(validationResponse));
 
@@ -62,7 +62,7 @@ namespace StockAPI.UnitTests.Controllers
             _stockServiceMock.Verify(x => x.GetStocks(It.IsAny<string>()), Times.Never);
 
             Assert.IsInstanceOf<StockResponse>(actual.Value);
-            Assert.AreEqual(-101, ((StockResponse)actual.Value!).Response.Code);
+            Assert.AreEqual(-101, ((StockResponse)actual.Value!).ResponseStatus.Code);
             Assert.AreEqual(400, actual.StatusCode);
         }
 
@@ -79,7 +79,7 @@ namespace StockAPI.UnitTests.Controllers
 
             Assert.IsInstanceOf<StockResponse>(actual.Value);
             Assert.AreEqual(500, actual.StatusCode);
-            Assert.AreEqual("Internal Server Error", ((StockResponse)actual.Value).Response.Message);
+            Assert.AreEqual("Internal Server Error", ((StockResponse)actual.Value).ResponseStatus.Message);
         }
     }
 }

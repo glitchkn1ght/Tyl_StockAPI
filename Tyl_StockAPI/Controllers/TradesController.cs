@@ -1,7 +1,9 @@
 using CommonModels;
 using Microsoft.AspNetCore.Mvc;
 using Stock_API.Interfaces;
+using Stock_API.Models;
 using Stock_API.Models.Response;
+using Stock_API.Validation;
 
 namespace Stock_API.Controllers
 {
@@ -11,20 +13,20 @@ namespace Stock_API.Controllers
     public class TradesController : ControllerBase
     {
         private readonly ILogger<TradesController> _logger;
-        private readonly ISymbolValidationService _symbolValidationService;
+        private readonly IModelStateValidator _modelStateValidator;
         private readonly IServiceBusPublisher _serviceBusPublisher;
 
-        public TradesController(ILogger<TradesController> logger, ISymbolValidationService symbolValidationService, IServiceBusPublisher serviceBusPublisher)
+        public TradesController(ILogger<TradesController> logger, IModelStateValidator modelStateValidator, IServiceBusPublisher serviceBusPublisher)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _modelStateValidator = modelStateValidator ?? throw new ArgumentNullException(nameof(modelStateValidator));
             _serviceBusPublisher = serviceBusPublisher ?? throw new ArgumentNullException(nameof(serviceBusPublisher));
-            _symbolValidationService = symbolValidationService ?? throw new ArgumentNullException(nameof(symbolValidationService));
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StockResponse))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(StockResponse))]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(StockResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TradeResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(TradeResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(TradeResponse))]
         public async Task<IActionResult> StoreTrade(Trade trade)
         {
             TradeResponse tradeResponse = new TradeResponse()
@@ -36,11 +38,13 @@ namespace Stock_API.Controllers
             {
                 _logger.LogInformation($"[Operation=ProcessTrade], Status=Success, Message=Processing Trade {trade.TradeId} from Broker {trade.BrokerId}");
 
-                tradeResponse.Response = await _symbolValidationService.ValidateTickerSymbol(trade.TickerSymbol);
-
-                if (tradeResponse.Response.Code != 0)
+                if (!ModelState.IsValid)
                 {
-                    return new BadRequestObjectResult(tradeResponse);
+                    tradeResponse.ResponseStatus = _modelStateValidator.MapModelStateErrors(ModelState);
+
+                    _logger.LogError($"[Operation=GetStockPrices], Status=Failure, Message=Validation of Stock Symbols failed, details {tradeResponse.ResponseStatus.Message}");
+
+                    return BadRequest(tradeResponse);
                 }
 
                 _logger.LogInformation($"[Operation=ProcessTrade], Status=Success, Message=Validation of Symbols Successful, Posting trade {trade.TradeId} to message bus.");
@@ -54,8 +58,8 @@ namespace Stock_API.Controllers
             {
                 _logger.LogError($"[Operation=ProcessTrade], Status=Failure, Message=Exception Thrown, details {ex.Message}");
 
-                tradeResponse.Response.Code = 500;
-                tradeResponse.Response.Message = "Internal Server Error";
+                tradeResponse.ResponseStatus.Code = 500;
+                tradeResponse.ResponseStatus.Message = "Internal Server Error";
                 return new ObjectResult(tradeResponse) { StatusCode = 500 };
             }
         }

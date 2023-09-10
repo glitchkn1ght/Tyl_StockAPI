@@ -12,7 +12,7 @@ namespace Stock_API.Models
         public Guid BrokerId { get; set; }
 
         [Required]
-        [StringLength(5)]
+        [TickerSymbol]
         public string TickerSymbol { get; set; } = string.Empty;
 
         [Required]

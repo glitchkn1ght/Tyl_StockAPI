@@ -40,7 +40,7 @@ namespace StockAPI.UnitTests.Controllers
         [Test]
         public void When_TradeStoredSuccessfully_ThenStoreTradeReturnsOk()
         {
-            GeneralResponse validationResponse = new GeneralResponse() { Code = 0, Message = "OK" };
+            ResponseStatus validationResponse = new ResponseStatus() { Code = 0, Message = "OK" };
 
             _symbolValidationServiceMock.Setup(x => x.ValidateTickerSymbol(_trade.TickerSymbol)).Returns(Task.FromResult(validationResponse));
 
@@ -55,7 +55,7 @@ namespace StockAPI.UnitTests.Controllers
         [Test]
         public void When_ValidationServiceReturnsNonSuccess_ThenStoreTradeReturnsBadRequest()
         {
-            GeneralResponse validationResponse = new GeneralResponse() { Code = -101, Message = "ValidationError"};
+            ResponseStatus validationResponse = new ResponseStatus() { Code = -101, Message = "ValidationError"};
 
             _symbolValidationServiceMock.Setup(x => x.ValidateTickerSymbol(It.IsAny<string>())).Returns(Task.FromResult(validationResponse));
 
@@ -64,7 +64,7 @@ namespace StockAPI.UnitTests.Controllers
             this._serviceBusPublisherMock.Verify(x => x.PublishTradeToTopic(It.IsAny<Trade>()), Times.Never);
 
             Assert.IsInstanceOf<TradeResponse>(actual.Value);
-            Assert.AreEqual(-101, ((TradeResponse)actual.Value!).Response.Code);
+            Assert.AreEqual(-101, ((TradeResponse)actual.Value!).ResponseStatus.Code);
             Assert.AreEqual(400, actual.StatusCode);
         }
 
@@ -79,7 +79,7 @@ namespace StockAPI.UnitTests.Controllers
 
             Assert.IsInstanceOf<TradeResponse>(actual.Value);
             Assert.AreEqual(500, actual.StatusCode);
-            Assert.AreEqual("Internal Server Error", ((TradeResponse)actual.Value).Response.Message);
+            Assert.AreEqual("Internal Server Error", ((TradeResponse)actual.Value).ResponseStatus.Message);
         }
     }
 }

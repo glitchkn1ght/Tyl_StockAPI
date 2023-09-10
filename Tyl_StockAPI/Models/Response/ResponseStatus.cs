@@ -1,6 +1,6 @@
 ﻿namespace Stock_API.Models.Response
 {
-    public class GeneralResponse
+    public class ResponseStatus
     {
         public int? Code { get; set; } = null;
 
