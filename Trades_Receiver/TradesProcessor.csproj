@@ -42,6 +42,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Tyl_StockAPI\Stock_API.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="DAL\Polly\PollySqlDbConnection.cs">
       <SubType>Component</SubType>
     </Compile>

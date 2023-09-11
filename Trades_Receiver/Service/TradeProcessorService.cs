@@ -3,6 +3,7 @@ using CommonModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Stock_API.Models;
 using Trades_Receiver.DAL.Repositories;
 
 namespace TradesProcessor.Service

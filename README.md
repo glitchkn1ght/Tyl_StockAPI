@@ -14,7 +14,6 @@ we can create a buffer between the two to prevent slowdown of the requests. A fu
 it's own microservice and make it scale dynamically based on demand.
 - Also we might reconfigure the requests to be processed via GRPC rather than REST as it's generally more performant.
 - I considered combining both of the get stock price methods in the controller into one via an additional parameter (e.g. getAllStock prices = true) but this would have increased the complexity around validation logic and would be less intuitive for others trying to integrate with it. Therefore i thought the simplicity of having two different methods was worth having some repeated code. 
-- I know having the commonModels project seems unneccessary given it only has two classes in reality it would contain a lot more and be worth the reduction in repeated code.
 
 ## Points for improvment
 

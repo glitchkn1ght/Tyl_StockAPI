@@ -1,6 +1,6 @@
-﻿using CommonModels;
-using Dapper;
+﻿using Dapper;
 using Microsoft.Extensions.Options;
+using Stock_API.Models;
 using System.Data;
 using TradesProcessor.Interfaces;
 using TradesProcessor.Models;
