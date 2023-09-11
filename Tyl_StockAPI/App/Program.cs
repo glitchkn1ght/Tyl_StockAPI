@@ -1,9 +1,7 @@
 using Azure.Messaging.ServiceBus;
 using CommonModels;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Serilog;
-using Stock_API.App;
 using Stock_API.Interfaces;
 using Stock_API.Service;
 using Stock_API.ServiceBus;

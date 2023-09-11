@@ -1,6 +1,7 @@
-﻿using Stock_API.Models;
+﻿using Stock_API.Interfaces;
+using Stock_API.Models;
 
-namespace Stock_API.Interfaces
+namespace Stock_API.Service
 {
     public class StockService : IStockService
     {
