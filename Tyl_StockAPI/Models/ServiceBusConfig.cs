@@ -1,4 +1,4 @@
-﻿namespace CommonModels
+﻿namespace Stock_API.Models
 {
     public class ServiceBusConfig
     {

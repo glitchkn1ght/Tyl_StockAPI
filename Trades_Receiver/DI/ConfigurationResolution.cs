@@ -1,10 +1,9 @@
 ﻿using Azure.Messaging.ServiceBus;
-using CommonModels;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Serilog;
+using Stock_API.Models;
 using Trades_Receiver.DAL.Repositories;
 using TradesProcessor.DAL.Polly;
 using TradesProcessor.Interfaces;

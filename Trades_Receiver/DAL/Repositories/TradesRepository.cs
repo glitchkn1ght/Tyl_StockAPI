@@ -27,8 +27,7 @@ namespace Trades_Receiver.DAL.Repositories
                 parameters.Add("@TradeId", trade.TradeId);
                 parameters.Add("@BrokerId", trade.BrokerId);
                 parameters.Add("@TickerSymbol", trade.TickerSymbol);
-                parameters.Add("@PriceTotal", trade.PriceTotal);
-                parameters.Add("@TradeCurrency", trade.TradeCurrency);
+                parameters.Add("@PriceTotalPounds", trade.PriceTotalPounds);
                 parameters.Add("@NumberOfShares", trade.NumberOfShares);
 
                 await connection.ExecuteAsync(this.TradesRepositorySettings.InsertProc, parameters, commandType: CommandType.StoredProcedure);

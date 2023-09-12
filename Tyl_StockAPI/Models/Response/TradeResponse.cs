@@ -1,6 +1,4 @@
-﻿using CommonModels;
-
-namespace Stock_API.Models.Response
+﻿namespace Stock_API.Models.Response
 {
     public class TradeResponse
     {

@@ -1,5 +1,4 @@
 ﻿using Azure.Messaging.ServiceBus;
-using CommonModels;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Stock_API.Interfaces;

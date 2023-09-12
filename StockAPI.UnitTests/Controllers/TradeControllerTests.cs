@@ -31,9 +31,8 @@ namespace StockAPI.UnitTests.Controllers
             {
                 BrokerId = new Guid("136bb453-c002-49fe-9ab4-b8d3f528ca4c"),
                 TradeId = new Guid("5b1589c9-d052-465b-8b62-bd241a9c6847"),
-                TradeCurrency = "GBP",
                 NumberOfShares = 10,
-                PriceTotal = 100,
+                PriceTotalPounds = 100,
                 TickerSymbol = "AMZN"
             };
         }

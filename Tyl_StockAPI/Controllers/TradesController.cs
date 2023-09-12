@@ -1,4 +1,3 @@
-using CommonModels;
 using Microsoft.AspNetCore.Mvc;
 using Stock_API.Interfaces;
 using Stock_API.Models;

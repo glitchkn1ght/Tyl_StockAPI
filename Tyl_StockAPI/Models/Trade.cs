@@ -17,10 +17,7 @@ namespace Stock_API.Models
 
         [Required]
         [Range(0, (double)decimal.MaxValue)]
-        public decimal PriceTotal { get; set; }
-
-        [Required]
-        public string TradeCurrency { get; set; } = string.Empty;
+        public decimal PriceTotalPounds { get; set; }
 
         [Required]
         [Range(0, (double)decimal.MaxValue)]
