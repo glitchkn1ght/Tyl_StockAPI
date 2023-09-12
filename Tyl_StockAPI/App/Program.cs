@@ -28,7 +28,7 @@ namespace Stock_API.App
                 return new ServiceBusClient(options.ConnectionString);
             });
 
-            builder.Services.AddScoped<IModelStateValidator, ModelStateValidator>();
+            builder.Services.AddScoped<IModelStateErrorMapper, ModelStateErrorMapper>();
 
             builder.Services.AddScoped<IStockService, StockService>();
 

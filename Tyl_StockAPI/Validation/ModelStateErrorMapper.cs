@@ -1,14 +1,11 @@
 ﻿using Stock_API.Models.Response;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Stock_API.Interfaces;
 
 namespace Stock_API.Validation
 {
-    public interface IModelStateValidator
-    {
-        ResponseStatus MapModelStateErrors(ModelStateDictionary modelState);
-    }
 
-    public class ModelStateValidator : IModelStateValidator
+    public class ModelStateErrorMapper : IModelStateErrorMapper
     {
         public ResponseStatus MapModelStateErrors(ModelStateDictionary modelState)
         {

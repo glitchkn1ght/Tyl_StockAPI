@@ -1,18 +1,19 @@
-using NUnit.Framework;
-using Moq;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
+using Moq;
+using NUnit.Framework;
 using Stock_API.Controllers;
 using Stock_API.Interfaces;
+using Stock_API.Models;
 using Stock_API.Models.Response;
-using Microsoft.AspNetCore.Mvc;
-using CommonModels;
 
 namespace StockAPI.UnitTests.Controllers
 {
     public class TradeControllerTests
     {
         private Mock<ILogger<TradesController>> _loggerMock;
-        private Mock<ISymbolValidationService> _symbolValidationServiceMock;
+        private Mock<IModelStateErrorMapper> _modelStateErrorMapper;
         private Mock<IServiceBusPublisher> _serviceBusPublisherMock;
         private TradesController _tradeController;
         private Trade _trade;
@@ -21,10 +22,10 @@ namespace StockAPI.UnitTests.Controllers
         public void Setup()
         {
             _loggerMock = new Mock<ILogger<TradesController>>();
-            _symbolValidationServiceMock = new Mock<ISymbolValidationService>();
+            _modelStateErrorMapper = new Mock<IModelStateErrorMapper>();
             _serviceBusPublisherMock = new Mock<IServiceBusPublisher>();
 
-            _tradeController = new TradesController(_loggerMock.Object, _symbolValidationServiceMock.Object, _serviceBusPublisherMock.Object);
+            _tradeController = new TradesController(_loggerMock.Object, _modelStateErrorMapper.Object, _serviceBusPublisherMock.Object);
 
             _trade = new Trade()
             {
@@ -42,26 +43,26 @@ namespace StockAPI.UnitTests.Controllers
         {
             ResponseStatus validationResponse = new ResponseStatus() { Code = 0, Message = "OK" };
 
-            _symbolValidationServiceMock.Setup(x => x.ValidateTickerSymbol(_trade.TickerSymbol)).Returns(Task.FromResult(validationResponse));
-
             ObjectResult actual = (ObjectResult)this._tradeController.StoreTrade(_trade).Result;
 
-            this._serviceBusPublisherMock.Verify(x => x.PublishTradeToTopic(_trade), Times.Once);
+            _modelStateErrorMapper.Verify(x => x.MapModelStateErrors(It.IsAny<ModelStateDictionary>()),Times.Never);
+            _serviceBusPublisherMock.Verify(x => x.PublishTradeToTopic(_trade), Times.Once);
 
             Assert.IsInstanceOf<TradeResponse>(actual.Value);
             Assert.AreEqual(200, actual.StatusCode);
         }
 
         [Test]
-        public void When_ValidationServiceReturnsNonSuccess_ThenStoreTradeReturnsBadRequest()
+        public void When_ModelStateHasErrors_ThenStoreTradeReturnsBadRequest()
         {
             ResponseStatus validationResponse = new ResponseStatus() { Code = -101, Message = "ValidationError"};
 
-            _symbolValidationServiceMock.Setup(x => x.ValidateTickerSymbol(It.IsAny<string>())).Returns(Task.FromResult(validationResponse));
+            _tradeController.ModelState.AddModelError("SomeKey", "SomeError");
+            _modelStateErrorMapper.Setup(x => x.MapModelStateErrors(It.IsAny<ModelStateDictionary>())).Returns(validationResponse);
 
             ObjectResult actual = (ObjectResult)this._tradeController.StoreTrade(_trade).Result;
 
-            this._serviceBusPublisherMock.Verify(x => x.PublishTradeToTopic(It.IsAny<Trade>()), Times.Never);
+            _serviceBusPublisherMock.Verify(x => x.PublishTradeToTopic(It.IsAny<Trade>()), Times.Never);
 
             Assert.IsInstanceOf<TradeResponse>(actual.Value);
             Assert.AreEqual(-101, ((TradeResponse)actual.Value!).ResponseStatus.Code);
@@ -71,12 +72,12 @@ namespace StockAPI.UnitTests.Controllers
         [Test]
         public void When_ExceptionThrown_ThenStoreTradeReturnsInternalServerError()
         {
-            _symbolValidationServiceMock.Setup(x => x.ValidateTickerSymbol(It.IsAny<string>())).Throws(new Exception());
+            _serviceBusPublisherMock.Setup(x => x.PublishTradeToTopic(_trade)).Throws(new Exception());
 
             ObjectResult actual = (ObjectResult)this._tradeController.StoreTrade(_trade).Result;
 
-            this._serviceBusPublisherMock.Verify(x => x.PublishTradeToTopic(It.IsAny<Trade>()), Times.Never);
-
+            _modelStateErrorMapper.Verify(x => x.MapModelStateErrors(It.IsAny<ModelStateDictionary>()), Times.Never);
+        
             Assert.IsInstanceOf<TradeResponse>(actual.Value);
             Assert.AreEqual(500, actual.StatusCode);
             Assert.AreEqual("Internal Server Error", ((TradeResponse)actual.Value).ResponseStatus.Message);

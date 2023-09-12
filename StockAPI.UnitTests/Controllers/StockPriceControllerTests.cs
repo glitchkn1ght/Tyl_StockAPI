@@ -8,13 +8,14 @@ using Microsoft.AspNetCore.Mvc;
 using CommonModels;
 using Tyl_StockAPI.Controllers;
 using Stock_API.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace StockAPI.UnitTests.Controllers
 {
     public class StockPriceTests
     {
         private Mock<ILogger<TradesController>> _loggerMock;
-        private Mock<ISymbolValidationService> _symbolValidationServiceMock;
+        private Mock<IModelStateErrorMapper> _modelStateValidator;
         private Mock<IStockService> _stockServiceMock;
         private StockPriceController _stockController;
 
@@ -22,10 +23,10 @@ namespace StockAPI.UnitTests.Controllers
         public void Setup()
         {
             _loggerMock = new Mock<ILogger<TradesController>>();
-            _symbolValidationServiceMock = new Mock<ISymbolValidationService>();
+            _modelStateValidator = new Mock<IModelStateErrorMapper>();
             _stockServiceMock = new Mock<IStockService>();
 
-            _stockController = new StockPriceController(_loggerMock.Object, _symbolValidationServiceMock.Object, _stockServiceMock.Object);
+            _stockController = new StockPriceController(_loggerMock.Object, _modelStateValidator.Object, _stockServiceMock.Object);
         }
 
         [Test]
@@ -38,8 +39,6 @@ namespace StockAPI.UnitTests.Controllers
             List<Stock> stocks = new List<Stock>();
             stocks.Add(new Stock("AAPL", 100.1M));
 
-            _symbolValidationServiceMock.Setup(x => x.ValidateTickerSymbol(symbols)).Returns(Task.FromResult(validationResponse));
-
             _stockServiceMock.Setup(x => x.GetStocks(symbols)).Returns(Task.FromResult(stocks));
 
             ObjectResult actual = (ObjectResult)this._stockController.GetStockPrices(symbols).Result;
@@ -49,13 +48,13 @@ namespace StockAPI.UnitTests.Controllers
         }
 
         [Test]
-        public void When_ValidationServiceReturnsNonSuccess_ThenGetStockPricesReturnsBadRequest()
+        public void When_ModelStateHasErrors_ThenGetStockPricesReturnsBadRequest()
         {
             string symbol = "AMZN";
-            
-            ResponseStatus validationResponse = new ResponseStatus() { Code = -101, Message = "ValidationError"};
+            ResponseStatus validationResponse = new ResponseStatus() { Code = -101, Message = "ValidationError" };
+            _stockController.ModelState.AddModelError("SomeKey", "SomeError");
 
-            _symbolValidationServiceMock.Setup(x => x.ValidateTickerSymbol(It.IsAny<string>())).Returns(Task.FromResult(validationResponse));
+            _modelStateValidator.Setup(x => x.MapModelStateErrors(It.IsAny<ModelStateDictionary>())).Returns(validationResponse);
 
             ObjectResult actual = (ObjectResult)this._stockController.GetStockPrices(symbol).Result;
 
@@ -71,11 +70,9 @@ namespace StockAPI.UnitTests.Controllers
         {
             string symbol = "AMZN";
 
-            _symbolValidationServiceMock.Setup(x => x.ValidateTickerSymbol(It.IsAny<string>())).Throws(new Exception());
+            _stockServiceMock.Setup(x => x.GetStocks(It.IsAny<string>())).Throws(new Exception());
 
             ObjectResult actual = (ObjectResult)this._stockController.GetStockPrices(symbol).Result;
-
-            _stockServiceMock.Verify(x => x.GetStocks(It.IsAny<string>()), Times.Never);
 
             Assert.IsInstanceOf<StockResponse>(actual.Value);
             Assert.AreEqual(500, actual.StatusCode);

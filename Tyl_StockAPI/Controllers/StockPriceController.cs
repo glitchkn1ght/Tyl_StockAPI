@@ -14,10 +14,10 @@ namespace Tyl_StockAPI.Controllers
     public class StockPriceController : ControllerBase
     {
         private readonly ILogger<TradesController> _logger;
-        private readonly IModelStateValidator _modelStateValidator;
+        private readonly IModelStateErrorMapper _modelStateValidator;
         private readonly IStockService _stockService;
 
-        public StockPriceController(ILogger<TradesController> logger, IModelStateValidator modelStateValidator, IStockService stockService)
+        public StockPriceController(ILogger<TradesController> logger, IModelStateErrorMapper modelStateValidator, IStockService stockService)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _modelStateValidator = modelStateValidator ?? throw new ArgumentNullException(nameof(modelStateValidator));

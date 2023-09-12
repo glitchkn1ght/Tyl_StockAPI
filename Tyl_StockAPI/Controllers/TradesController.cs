@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Stock_API.Interfaces;
 using Stock_API.Models;
 using Stock_API.Models.Response;
-using Stock_API.Validation;
 
 namespace Stock_API.Controllers
 {
@@ -13,10 +12,10 @@ namespace Stock_API.Controllers
     public class TradesController : ControllerBase
     {
         private readonly ILogger<TradesController> _logger;
-        private readonly IModelStateValidator _modelStateValidator;
+        private readonly IModelStateErrorMapper _modelStateValidator;
         private readonly IServiceBusPublisher _serviceBusPublisher;
 
-        public TradesController(ILogger<TradesController> logger, IModelStateValidator modelStateValidator, IServiceBusPublisher serviceBusPublisher)
+        public TradesController(ILogger<TradesController> logger, IModelStateErrorMapper modelStateValidator, IServiceBusPublisher serviceBusPublisher)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _modelStateValidator = modelStateValidator ?? throw new ArgumentNullException(nameof(modelStateValidator));
