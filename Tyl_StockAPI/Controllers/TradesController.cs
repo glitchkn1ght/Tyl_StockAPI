@@ -41,12 +41,12 @@ namespace Stock_API.Controllers
                 {
                     tradeResponse.ResponseStatus = _modelStateValidator.MapModelStateErrors(ModelState);
 
-                    _logger.LogError($"[Operation=GetStockPrices], Status=Failure, Message=Validation of Stock Symbols failed, details {tradeResponse.ResponseStatus.Message}");
+                    _logger.LogError($"[Operation=GetStockPrices], Status=Failure, Message=Model Validation failed, details {tradeResponse.ResponseStatus.Message}");
 
                     return BadRequest(tradeResponse);
                 }
 
-                _logger.LogInformation($"[Operation=ProcessTrade], Status=Success, Message=Validation of Symbols Successful, Posting trade {trade.TradeId} to message bus.");
+                _logger.LogInformation($"[Operation=ProcessTrade], Status=Success, Message=Model Validation Successful, Posting trade {trade.TradeId} to message bus.");
 
                 await _serviceBusPublisher.PublishTradeToTopic(trade);
 

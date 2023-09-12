@@ -1,17 +1,17 @@
-using NUnit.Framework;
-using Moq;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
+using Moq;
+using NUnit.Framework;
 using Stock_API.Controllers;
 using Stock_API.Interfaces;
-using Stock_API.Models.Response;
-using Microsoft.AspNetCore.Mvc;
-using CommonModels;
-using Tyl_StockAPI.Controllers;
 using Stock_API.Models;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Stock_API.Models.Response;
+using Tyl_StockAPI.Controllers;
 
 namespace StockAPI.UnitTests.Controllers
 {
+    [TestFixture]
     public class StockPriceTests
     {
         private Mock<ILogger<TradesController>> _loggerMock;

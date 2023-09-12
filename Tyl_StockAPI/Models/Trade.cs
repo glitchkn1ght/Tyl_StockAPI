@@ -6,10 +6,10 @@ namespace Stock_API.Models
     public class Trade
     {
         [NotNullOrEmpty]
-        public Guid TradeId { get; set; }
+        public Guid? TradeId { get; set; }
 
         [NotNullOrEmpty]
-        public Guid BrokerId { get; set; }
+        public Guid? BrokerId { get; set; }
 
         [Required]
         [TickerSymbol]

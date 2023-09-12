@@ -1,10 +1,8 @@
-using Azure;
 using Microsoft.AspNetCore.Mvc;
 using Stock_API.Controllers;
 using Stock_API.Interfaces;
 using Stock_API.Models.Response;
 using Stock_API.Validation;
-using System.ComponentModel.DataAnnotations;
 
 namespace Tyl_StockAPI.Controllers
 {
@@ -41,12 +39,14 @@ namespace Tyl_StockAPI.Controllers
                 {
                     stockResponse.ResponseStatus = _modelStateValidator.MapModelStateErrors(ModelState);
 
-                    _logger.LogError($"[Operation=GetStockPrices], Status=Failure, Message=Validation of Stock Symbols failed, details {stockResponse.ResponseStatus.Message}");
+                    _logger.LogError($"[Operation=GetStockPrices], Status=Failure, Message=Model State Validation failed, details {stockResponse.ResponseStatus.Message}");
 
                     return BadRequest(stockResponse);
                 }
 
-                stockResponse.Stocks =  await _stockService.GetStocks(symbols);
+                _logger.LogError($"[Operation=GetStockPrices], Status=Failure, Message=Model State Validation Succeeded, Returning Stock Prices for symbols provided");
+
+                stockResponse.Stocks = await _stockService.GetStocks(symbols);
 
                 return new OkObjectResult(stockResponse);
             }
@@ -74,17 +74,14 @@ namespace Tyl_StockAPI.Controllers
 
             try
             {
-                stockResponse.Stocks = await _stockService.GetStocks(null);
-
-                stockResponse.ResponseStatus.Code = 0;
-                stockResponse.ResponseStatus.Message = "OK";
+                stockResponse.Stocks = await _stockService.GetAllStocks();
 
                 return new OkObjectResult(stockResponse);
             }
 
             catch (Exception ex)
             {
-                _logger.LogError($"[Operation=GetStockPrices], Status=Failure, Message=Exception Thrown, details {ex.Message}");
+                _logger.LogError($"[Operation=GetAllStockPrices], Status=Failure, Message=Exception Thrown, details {ex.Message}");
 
                 stockResponse.ResponseStatus.Code = 500;
                 stockResponse.ResponseStatus.Message = "Internal Server Error";

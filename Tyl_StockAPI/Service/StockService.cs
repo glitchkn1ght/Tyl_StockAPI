@@ -25,14 +25,19 @@ namespace Stock_API.Service
                 }
             }
 
-            else
-            {
-                stocks.Add(new Stock("AAPL", rnd.Next(1, 500)));
-                stocks.Add(new Stock("AMZN", rnd.Next(1, 500)));
-                stocks.Add(new Stock("MSFT", rnd.Next(1, 500)));
-                stocks.Add(new Stock("ATVI", rnd.Next(1, 500)));
+            return await Task.FromResult(stocks);
+        }
 
-            }
+        public async Task<List<Stock>> GetAllStocks()
+        {
+            List<Stock> stocks = new List<Stock>();
+            Random rnd = new Random();
+
+            stocks.Add(new Stock("AAPL", rnd.Next(1, 500)));
+            stocks.Add(new Stock("AMZN", rnd.Next(1, 500)));
+            stocks.Add(new Stock("MSFT", rnd.Next(1, 500)));
+            stocks.Add(new Stock("ATVI", rnd.Next(1, 500)));
+            
             return await Task.FromResult(stocks);
         }
     }

@@ -4,7 +4,6 @@ using Stock_API.Interfaces;
 
 namespace Stock_API.Validation
 {
-
     public class ModelStateErrorMapper : IModelStateErrorMapper
     {
         public ResponseStatus MapModelStateErrors(ModelStateDictionary modelState)

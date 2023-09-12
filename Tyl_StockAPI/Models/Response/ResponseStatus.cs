@@ -2,8 +2,8 @@
 {
     public class ResponseStatus
     {
-        public int? Code { get; set; } = null;
+        public int? Code { get; set; } = 0;
 
-        public string Message { get; set; } = string.Empty;
+        public string Message { get; set; } = "OK";
     }
 }
