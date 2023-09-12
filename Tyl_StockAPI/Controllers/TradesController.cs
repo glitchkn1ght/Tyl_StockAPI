@@ -40,7 +40,7 @@ namespace Stock_API.Controllers
                 {
                     tradeResponse.ResponseStatus = _modelStateValidator.MapModelStateErrors(ModelState);
 
-                    _logger.LogError($"[Operation=GetStockPrices], Status=Failure, Message=Model Validation failed, details {tradeResponse.ResponseStatus.Message}");
+                    _logger.LogError($"[Operation=ProcessTrade], Status=Failure, Message=Model Validation failed, details {tradeResponse.ResponseStatus.Message}");
 
                     return BadRequest(tradeResponse);
                 }

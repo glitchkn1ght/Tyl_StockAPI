@@ -17,14 +17,14 @@ namespace Stock_API.Validation
         {
             ResponseStatus response = new ResponseStatus();
 
-            string requestedSymbols = (string)value;
+            string requestedSymbols = ((string)value).ToUpper();
             List<string> requestedSymbolList = requestedSymbols.Split(',').ToList();
 
             IEnumerable<string> invalidSymbols = requestedSymbolList.Except(validSymbols);
 
             if (invalidSymbols.Any())
             {
-                string validationErrors = $"The following ticker symbols are not valid: {String.Join(", ", invalidSymbols)}";
+                string validationErrors = $"The following ticker symbols are not valid: {string.Join(", ", invalidSymbols)}";
 
                 ErrorMessage = validationErrors;
 
