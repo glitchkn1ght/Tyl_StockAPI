@@ -1,6 +1,7 @@
 using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Options;
 using Serilog;
+using Stock_API.App.Middleware;
 using Stock_API.Interfaces;
 using Stock_API.Models;
 using Stock_API.Service;
@@ -50,6 +51,9 @@ namespace Stock_API.App
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+           // app.UseSerilogRequestLogging();
+
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.UseHttpsRedirection();
 

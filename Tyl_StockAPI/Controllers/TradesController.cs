@@ -23,8 +23,8 @@ namespace Stock_API.Controllers
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TradeResponse))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(TradeResponse))]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(TradeResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseStatus))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ResponseStatus))]
         public async Task<IActionResult> StoreTrade(Trade trade)
         {
             TradeResponse tradeResponse = new TradeResponse()
@@ -32,34 +32,22 @@ namespace Stock_API.Controllers
                 Trade = trade
             };
 
-            try
+            _logger.LogInformation($"Message=Processing Trade {trade.TradeId} from Broker {trade.BrokerId}");
+
+            if (!ModelState.IsValid)
             {
-                _logger.LogInformation($"[Operation=ProcessTrade], Status=Success, Message=Processing Trade {trade.TradeId} from Broker {trade.BrokerId}");
+                tradeResponse.ResponseStatus = _modelStateValidator.MapModelStateErrors(ModelState);
 
-                if (!ModelState.IsValid)
-                {
-                    tradeResponse.ResponseStatus = _modelStateValidator.MapModelStateErrors(ModelState);
+                _logger.LogError($"Message=Model Validation failed, details {tradeResponse.ResponseStatus.Message}");
 
-                    _logger.LogError($"[Operation=ProcessTrade], Status=Failure, Message=Model Validation failed, details {tradeResponse.ResponseStatus.Message}");
-
-                    return BadRequest(tradeResponse);
-                }
-
-                _logger.LogInformation($"[Operation=ProcessTrade], Status=Success, Message=Model Validation Successful, Posting trade {trade.TradeId} to message bus.");
-
-                await _serviceBusPublisher.PublishTradeToTopic(trade);
-
-                return new OkObjectResult(tradeResponse);
+                return BadRequest(tradeResponse.ResponseStatus);
             }
 
-            catch (Exception ex)
-            {
-                _logger.LogError($"[Operation=ProcessTrade], Status=Failure, Message=Exception Thrown, details {ex.Message}");
+            _logger.LogInformation($"Model Validation Successful, Posting trade {trade.TradeId} to message bus.");
 
-                tradeResponse.ResponseStatus.Code = 500;
-                tradeResponse.ResponseStatus.Message = "Internal Server Error";
-                return new ObjectResult(tradeResponse) { StatusCode = 500 };
-            }
+            await _serviceBusPublisher.PublishTradeToTopic(trade);
+
+            return new OkObjectResult(tradeResponse);
         }
     }
 }

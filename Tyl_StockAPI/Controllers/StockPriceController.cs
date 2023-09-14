@@ -24,8 +24,8 @@ namespace Tyl_StockAPI.Controllers
 
         [HttpGet("GetStockPricesForSymbols/{symbols}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StockResponse))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(StockResponse))]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(StockResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseStatus))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ResponseStatus))]
         public async Task<IActionResult> GetStockPrices([TickerSymbol] string symbols)
         {
             StockResponse stockResponse = new StockResponse()
@@ -33,60 +33,35 @@ namespace Tyl_StockAPI.Controllers
                 RequestedSymbols = symbols
             };
 
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    stockResponse.ResponseStatus = _modelStateValidator.MapModelStateErrors(ModelState);
+                stockResponse.ResponseStatus = _modelStateValidator.MapModelStateErrors(ModelState);
 
-                    _logger.LogError($"[Operation=GetStockPrices], Status=Failure, Message=Model State Validation failed, details {stockResponse.ResponseStatus.Message}");
+                _logger.LogError($"Model State Validation failed, details {stockResponse.ResponseStatus.Message}");
 
-                    return BadRequest(stockResponse);
-                }
-
-                _logger.LogError($"[Operation=GetStockPrices], Status=Failure, Message=Model State Validation Succeeded, Returning Stock Prices for symbols provided");
-
-                stockResponse.Stocks = await _stockService.GetStocks(symbols);
-
-                return new OkObjectResult(stockResponse);
+                return BadRequest(stockResponse.ResponseStatus);
             }
 
-            catch (Exception ex)
-            {
-                _logger.LogError($"[Operation=GetStockPrices], Status=Failure, Message=Exception Thrown, details {ex.Message}");
+            _logger.LogError($"Model State Validation Succeeded, Returning Stock Prices for symbols provided");
 
-                stockResponse.ResponseStatus.Code = 500;
-                stockResponse.ResponseStatus.Message = "Internal Server Error";
-                return new ObjectResult(stockResponse) { StatusCode = 500 };
-            }
+            stockResponse.Stocks = await _stockService.GetStocks(symbols);
+
+            return new OkObjectResult(stockResponse);
         }
 
         [HttpGet("GetAllStockPrices")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StockResponse))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(StockResponse))]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(StockResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ResponseStatus))]
         public async Task<IActionResult> GetAllStockPrices()
-        {
+        {   
             StockResponse stockResponse = new StockResponse()
             {
                 RequestedSymbols = "All"
             };
 
-            try
-            {
-                stockResponse.Stocks = await _stockService.GetAllStocks();
+            stockResponse.Stocks = await _stockService.GetAllStocks();
 
-                return new OkObjectResult(stockResponse);
-            }
-
-            catch (Exception ex)
-            {
-                _logger.LogError($"[Operation=GetAllStockPrices], Status=Failure, Message=Exception Thrown, details {ex.Message}");
-
-                stockResponse.ResponseStatus.Code = 500;
-                stockResponse.ResponseStatus.Message = "Internal Server Error";
-                return new ObjectResult(stockResponse) { StatusCode = 500 };
-            }
+            return new OkObjectResult(stockResponse);
         }
     } 
 }
