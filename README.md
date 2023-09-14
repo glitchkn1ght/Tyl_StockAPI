@@ -14,7 +14,7 @@
 - Also we might reconfigure the requests to be processed via GRPC rather than REST as it's generally more performant.
 - I considered combining both of the get stock price methods in the controller into one via an additional parameter (e.g. getAllStock prices = true) but this would have increased the complexity around validation logic and would be less intuitive for others trying to integrate with it. 
    Therefore i thought the simplicity of having two different methods was worth having some repeated code. 
-- I did however split out the GetStock methods in the service layer. This was to reflect that if we are retrieving some stocks (rather than all of them) the relevenat
+- I did however split out the GetStock methods in the service layer. This was to reflect that if we are retrieving some stocks (rather than all of them) the relevant
   methods in our data store would probably be optimized differently.
 
 ## Points for improvment
